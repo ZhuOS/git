@@ -8,10 +8,8 @@ ResourceHost::ResourceHost(const string &basePath )
 string ResourceHost::getMimeType(const string &ext)
 {
 	unordered_map<string,string>::const_iterator it = mimeMap.find(ext);
-	if(it == mimeMap.end()){
-		cout<<"use default mimetype";	
+	if(it == mimeMap.end())
 		return "test/html";	
-	}
 	return it->second;
 }
 

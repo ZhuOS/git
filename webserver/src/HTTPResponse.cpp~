@@ -81,7 +81,6 @@ void HTTPResponse::putLine()
 //创建数据包
 byte* HTTPResponse::create()
 {	
-	
 	cout<<"putline"<<endl;
 	putLine();
 	

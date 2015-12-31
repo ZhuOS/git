@@ -43,7 +43,7 @@ public:
 	//解析函数
 	int parse();
     // 方法字符串与数字相互转换
-	string methodInt2Str( int mid);
+	string methodInt2Str(unsigned int mid);
 	int methodStr2Int( const string &mstr );
 	// 显示请求信息
 	void displayMessage();

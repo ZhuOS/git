@@ -42,7 +42,7 @@ public:
 	//fetch
 	string getMimeType(){ return mimeType; }
 	byte*  getData(){ return data; }
-	unsigned int	   getSize(){ return size; }
+	int	   getSize(){ return size; }
 	
 	
 	

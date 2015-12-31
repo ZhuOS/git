@@ -21,7 +21,7 @@ void HTTPMessage::putHeaders()//#########出错了
 	map<string,string>::iterator it;
 	for(it = headers->begin(); it!=headers->end(); it++){
 		string temp = it->first+":"+it->second+"\r\n";
-		cout<<"	temp "<<temp<<endl;//test
+		cout<<"	temp"<<temp<<endl;//test
 		putBytes((byte*)temp.c_str(),temp.size());
 	}
 	putcrlf();

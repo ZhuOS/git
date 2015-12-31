@@ -17,7 +17,7 @@ HTTPRequest::HTTPRequest(byte *buf,unsigned int len):HTTPMessage()
 	init();
 	
 	putBytes(buf, len);//########出错了,解决
-	cout<<"HTTPRequest(byte*,int)"<<endl<<buf<<endl;
+	//cout<<"HTTPRequest(byte*,int)"<<endl<<buf<<endl; //test
 }
 
 HTTPRequest::HTTPRequest(const string &ver, map<string,string> *phed, const string &dat, 
@@ -33,18 +33,23 @@ void HTTPRequest::init()
 	method = OPTIONS;
 }
 //method 整型转字符串
-string HTTPRequest::methodInt2Str( unsigned int mid )
+
+
+string HTTPRequest::methodInt2Str( int mid )
 {
 	if( mid<0 || METHOD_NUM<mid )
 		return "";
 	
-	return MethodString[mid];
+	return MethodString[mid];								//感觉，有问题
 }
 int HTTPRequest::methodStr2Int( const string &mstr )
-{
+{	
+//	cout<<"	methodStr2Int: "<<mstr<<endl;
 	for(int i = 0; i<METHOD_NUM; i++){
-		if( 1==strcmp( MethodString[i],mstr.c_str() ) )
+		if( 0 ==strcmp( MethodString[i],mstr.c_str() ) ){
+//			cout<<"	methodStr2Int: "<<i<<endl;				//test		
 			return i;
+		}
 	}
 	perror("method error");
 	return -1;
@@ -72,37 +77,45 @@ byte* HTTPRequest::create()
 int HTTPRequest::parse()
 {
 	cout<<"Request parse"<<endl;
+	
 	string strPlitSpace(" ");
 	string strMeth = getFirstPart(strPlitSpace, strPlitSpace.size(), getrpos());//########出错了
-
+	
 	//解析 method
 	if( (method = methodStr2Int(strMeth))== -1 ){
 		perror("get method error");
 		return 0;
 	}
-	cout<<strMeth<<endl;			//test
+	cout<<"method: "<<method<<endl;					//test
 	//解析request-URI
 	requestUri = getFirstPart(strPlitSpace, strPlitSpace.size(), getrpos());
-	//cout<<requestUri<<endl;			//test
+	cout<<"Request-Uri: "<<requestUri<<endl;			//test
 	//解析HTTP-version
 	string strPlitCRLF("\r\n");
 	version = getFirstPart(strPlitCRLF,strPlitCRLF.size(),getrpos());
+	cout<<"Version: "<<version<<endl;					//test
 	//解析Headers
-	if( !parseHeaders()){
+	if( !parseHeaders() ){
 		perror("parseHeaders error");
 		return 0;
 	}
 	//解析正文消息 data
-	if(getrpos()<size())
-		getBytes(data,size()-1-getrpos());
-	cout<<"Request parse success"<<endl;
+	cout<<"##parse data:"<<getrpos()<<"="<<size()<<endl;//test
+	if(getrpos()<size()){
+		cout<<"	have data\n";							//test
+		getBytes(data,size()-getrpos());
+		setData(data,size()-getrpos());
+	}else
+		cout<<"	no data\n";									//test
+	cout<<"Request parse success"<<endl;					//test
 	return 1;
 }
 // 显示请求信息
 void HTTPRequest::displayMessage()
 {
-	cout<<methodInt2Str(getMethod())<<" "<<getReqUri()<<" "<<getVersion()<<endl;
-	disHeadData();
+	cout<<methodInt2Str(method)<<" "<<requestUri<<" "<<version<<endl;
+	disHeadData();							//########出错了,solved
+	cout<<"request display success"<<endl;//test
 }
 
 

@@ -64,7 +64,7 @@ void ByteBuffer::getBytes(byte* buf, unsigned int len)
 void ByteBuffer::getBytes(byte* buf, unsigned int start_pos, unsigned int len)
 {
 	for(unsigned int i = start_pos; i<start_pos+len; i++)
-        buf[i] = buff[i];
+        buf[i-start_pos] = buff[i];			//调了一个晚上的错误，buf[i-start_pos]下标错误，溢出了
 }
 void ByteBuffer::put(byte b)
 {
@@ -94,27 +94,29 @@ void ByteBuffer::putBytes(byte* b, unsigned int len, unsigned int index)
 
 string ByteBuffer::getFirstPart(const string &plit,  int len,  int bpos )
 {
-
+	
     unsigned int epos = my_find_first_of(plit, plit.size(), bpos);
 	//cout<<"getFirstPart "<<"find rpos: "<<bpos<<endl;
-	cout<<"string size: "<<bpos<<"->"<<epos<<"="<<endl;
-	unsigned int size = epos - bpos;
-	byte *strBytes = new byte[size];
 
-	getBytes(strBytes, bpos, size);		//#######出错,
+	unsigned int ll = epos - bpos;
+	//ll = 20;
+	byte *strBytes = new byte[ll];
+	//cout<<"buff size:"<<size()<<"string size: "<<bpos<<"->"<<epos<<"="<<ll<<endl;//test
+	
+	getBytes(strBytes, bpos, ll);						//#######出错,solved
 
 	//strBytes[size-1] = '\0';
 	//cout<<"strBytes:"<<strBytes<<endl;
 
-	setrpos(epos+len);					//移动rpos	
+	setrpos(epos+len);							//移动rpos	
 
 	//byte* to string
-	char *chr = new char[size];
+	char *chr = new char[ll];
 	sprintf(chr,"%s",strBytes);
 	string ss(chr);
-	ss.resize(size);
-	cout<<"ss:"<<ss<<endl;
-	return ss;					//#######出错,解决
+	ss.resize(ll);
+	//cout<<"ss:"<<ss<<endl;
+	return ss;									//#######出错,解决
 }
 
 

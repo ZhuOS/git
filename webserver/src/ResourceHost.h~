@@ -33,7 +33,7 @@ private:
     };
 	//std::unordered_map<std::string, std::string> mimeMap;
 	string getMimeType(const string &ext);
-
+	
 public:
 	
 	ResourceHost(const string &basePath = BASE_PATH);

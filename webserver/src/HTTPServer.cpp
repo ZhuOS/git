@@ -231,24 +231,29 @@ bool HTTPServer::disconnet(Client* clt)
 bool HTTPServer::HandleMsg(Client *clt, char* message, int len)
 {
 	cout<<"HandleMsg:"<<endl;
-	message[len]='\0';
+	//message[len]='\0';
 	//cout<<message<<":"<<len<<endl;
 	
 	HTTPRequest* req = new HTTPRequest( (byte*)message, len );//########出错了，解决
 	cout<<"mark"<<endl;
-	if( !req->parse() ){				//########出错了
+	if( !req->parse() ){				//########出错了,解决
 		perror("request parse error");
 		return false;
 	}
 	else{
 		//显示请求消息
-		cout<<"receive message: \n";
-		req->displayMessage();
+		cout<<"##receive message: \n";
+		//cout<<req->getMethod()<<req->getReqUri()<<endl;//test
+		
+		req->displayMessage();			//########出错了,solved
 
-		Method method = (Method)req->getMethod();
+		int method = req->getMethod();
+		cout<<"Method method= "<<method<<endl;
 		switch(method){
 			case HEAD:					//方法HEAD
+				cout<<"###get HEAD message"<<endl;//test
 			case GET:
+				cout<<"###GET message"<<endl; //test
 				handleGet(clt,req);		//方法GET
 				break;
 			case OPTIONS:				//方法OPTIONS
@@ -271,7 +276,7 @@ bool HTTPServer::HandleMsg(Client *clt, char* message, int len)
 //HEAD    请求获取由Request-URI所标识的资源的响应消息报头
 void HTTPServer::handleGet(Client* clt, HTTPRequest* req)
 {
-
+	cout<<"handleGet()"<<endl;//test
 	// 查找报头中Host对应的HostName
 	string hostName = "";
     std::map<std::string, std::string> *heds = req->getHeaders();
@@ -296,17 +301,26 @@ void HTTPServer::handleGet(Client* clt, HTTPRequest* req)
 	resp->setVersion(HTTP_VERSION);
 	resp->setStatusCode(Status(OK));
 	resp->setReason("OK");
-	resp->insertHeaders("Content-Type",res->getMimeType());
+	cout<<">>getMimeType:"<<res->getMimeType()<<endl;		//test
+	resp->insertHeaders("Content-Type",res->getMimeType());	//####出错了,solved
+	cout<<"<<getMimeType"<<endl;							//test
+	
 	std::stringstream sz;
-	sz << res->getSize();
+	sz << res->getSize();									//##出错了
+	cout<<"resource size"<<sz.str()<<endl<<"content-length"<<endl;//test
 	resp->insertHeaders("Content-Length",sz.str());
+	cout<<"server"<<endl;//test
 	resp->insertHeaders("Server","ZhuOS/1.1");	
-	resp->setData(res->getData());
+	cout<<"data"<<endl;//test
+	resp->setData(res->getData(),res->getSize());
+	cout<<"create"<<endl;//test	
 	resp->create();
+	
 	// display Response-Message 
 	resp->displayMessage();
 	// send Response-Message 
 	sendResponse(clt, resp);
+	cout<<"handleGet() success"<<endl;//test
 }
 //OPTIONS 请求查询服务器的性能，或者查询与资源相关的选项和需求
 void HTTPServer::handleOptions(Client* clt, HTTPRequest* req)
