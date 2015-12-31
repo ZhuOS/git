@@ -1,7 +1,7 @@
 //HTTPServer.cpp
 
 #include"HTTPServer.h"
-
+//readFile error 有错误
 HTTPServer::HTTPServer()
 {
 	En = false;
@@ -302,19 +302,22 @@ void HTTPServer::handleGet(Client* clt, HTTPRequest* req)
 	resp->setStatusCode(Status(OK));
 	resp->setReason("OK");
 	cout<<">>getMimeType:"<<res->getMimeType()<<endl;		//test
-	resp->insertHeaders("Content-Type",res->getMimeType());//####出错了,solved
+	resp->insertHeaders("Content-Type",res->getMimeType());	//####出错了,solved
 	cout<<"<<getMimeType"<<endl;							//test
 	
-	std::stringstream sz;
-	sz << res->getSize();								//##出错了
-	cout<<"resource size"<<sz.str()<<endl<<"content-length"<<endl;//test
-	resp->insertHeaders("Content-Length",sz.str());
 	cout<<"server"<<endl;//test
-	resp->insertHeaders("Server","ZhuOS/1.1");	
+	resp->insertHeaders("Server","ZhuOS/1.1");
+
+	std::stringstream sz;
+	sz << res->getSize();							//##出错了,solved
+	cout<<"resource size: "<<sz.str()<<endl<<"content-length"<<endl;//test
+	resp->insertHeaders("Content-Length",sz.str());
+	
 	cout<<"data"<<endl;//test
 	resp->setData(res->getData(),res->getSize());
 	cout<<"create"<<endl;//test	
-	resp->create();
+	//resp->displayMessage();//test
+	resp->create();								//##出错了,solved
 	
 	// display Response-Message 
 	resp->displayMessage();

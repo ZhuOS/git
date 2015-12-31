@@ -77,10 +77,10 @@ void ByteBuffer::putcrlf()
 	putBytes( (byte*)&str,2);
 }
 
-void ByteBuffer::putBytes(byte* b, unsigned int len)
+void ByteBuffer::putBytes(byte* b, unsigned int len)//有错，solved
 {
 	cout<<"1 write position: "<<wpos<<endl;
-	buff.resize(len);
+	buff.resize(len+size());
 	memcpy(&buff[wpos],b,len);
 	wpos+=len;
 	cout<<"2 write position: "<<wpos<<endl;
@@ -103,7 +103,7 @@ string ByteBuffer::getFirstPart(const string &plit,  int len,  int bpos )
 	byte *strBytes = new byte[ll];
 	//cout<<"buff size:"<<size()<<"string size: "<<bpos<<"->"<<epos<<"="<<ll<<endl;//test
 	
-	getBytes(strBytes, bpos, ll);						//#######出错,
+	getBytes(strBytes, bpos, ll);						//#######出错,solved
 
 	//strBytes[size-1] = '\0';
 	//cout<<"strBytes:"<<strBytes<<endl;

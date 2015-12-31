@@ -17,14 +17,17 @@ HTTPMessage::HTTPMessage(const string &ver, map<std::string, std::string> *phed,
 }
 // 创建消息
 void HTTPMessage::putHeaders()//#########出错了
-{
-	map<string,string>::iterator it;
-	for(it = headers->begin(); it!=headers->end(); it++){
+{	
+	cout<<"putHeaders: size "<<headers->size()<<endl;			//test
+	map<string,string>::const_iterator it;
+	for(it = headers->begin(); it != headers->end(); it++){
 		string temp = it->first+":"+it->second+"\r\n";
-		cout<<"	temp "<<temp<<endl;//test
+		cout<<"	temp "<<temp<<endl;					//test		
 		putBytes((byte*)temp.c_str(),temp.size());
 	}
+	cout<<"putcrlf"<<endl;
 	putcrlf();
+	cout<<"putHeaders: exit"<<endl;//test
 }
 
 void HTTPMessage::putData()
@@ -54,12 +57,12 @@ int HTTPMessage::parseHeaders()
 void HTTPMessage::disHeadData()
 {
 	//显示报头
-	cout<<"<<disHeadData: "<<endl;//test
+	//cout<<"<<disHeadData: "<<endl;//test
 	for(map<string,string>::iterator it = headers->begin(); it != headers->end(); it++)
 		cout<<it->first<<":"<<it->second<<endl;
 	cout<<endl;
 	//显示正文
-	cout<<"data:"<<datalen<<endl;
+	//cout<<"data:"<<datalen<<endl;				//########data显示出错
 	if( datalen>0 ){
 		char* cc = new char[datalen];
 		string str;

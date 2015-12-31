@@ -77,15 +77,15 @@ void ByteBuffer::putcrlf()
 	putBytes( (byte*)&str,2);
 }
 
-void ByteBuffer::putBytes(byte* b, unsigned int len)
+void ByteBuffer::putBytes(byte* b, unsigned int len)//有错，solved
 {
 	cout<<"1 write position: "<<wpos<<endl;
-	buff.resize(len);
+	buff.resize(len+size());
 	memcpy(&buff[wpos],b,len);
 	wpos+=len;
 	cout<<"2 write position: "<<wpos<<endl;
 }
-void ByteBuffer::putBytes(byte* b, unsigned int len, unsigned int index)
+void ByteBuffer::putBytes(byte* b, unsigned int len, unsigned int index)//####有错，
 {
     for(unsigned int i = 0; i<len; i++)
         buff[index+i] = *b++;
