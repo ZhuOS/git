@@ -51,7 +51,8 @@ string HTTPResponse::statusCodeInt2Str(int scInt)
 			break;
 	}
 }	
-int HTTPResponse::statusCodeStr2Int(const string &strSC)
+/*
+int HTTPResponse::statusCodeStr2Int(const string &strSC)//有问题
 {
 		if(strSC == "CONTINUE" )
 			return 100;
@@ -69,7 +70,7 @@ int HTTPResponse::statusCodeStr2Int(const string &strSC)
 			perror("Status-Code String Not Found");
 			return -1;
 		}
-}
+}*/
 //buff加入请求行信息 
 void HTTPResponse::putLine()
 {
@@ -82,30 +83,30 @@ void HTTPResponse::putLine()
 //创建数据包
 byte* HTTPResponse::create()
 {	
-	cout<<"Response Create()"<<endl;
+	//cout<<"Response Create()"<<endl;
 	//cout<<"		wpos="<<getWpos()<<endl;
-	cout<<"		#current data:"<<getData()<<endl;
-	cout<<"	putline: ";			//test
+	//cout<<"		#current data:"<<getData()<<endl;
+	//cout<<"	putline: ";			//test
 	putLine();
 	//cout<<"		wpos="<<getWpos()<<endl;
-	cout<<"		#current data:"<<getData()<<endl;
+	//cout<<"		#current data:"<<getData()<<endl;
 
-	cout<<"	putheaders"<<endl;
+	//cout<<"	putheaders"<<endl;
 	putHeaders();		//####################出错了
 	//cout<<"		wpos="<<getWpos()<<endl;
-	cout<<"		#current data:"<<getData()<<endl;
+	//cout<<"		#current data:"<<getData()<<endl;
 
-	cout<<"	putdata: "<<getData()<<endl;				//test
+	//cout<<"	putdata: "<<getData()<<endl;				//test
 	putData();
 	//cout<<"		wpos="<<getWpos()<<endl;
-	cout<<"		#current data:"<<getData()<<endl;
+	//cout<<"		#current data:"<<getData()<<endl;
 
-	cout<<"	get all msg"<<endl;			//test
+	//cout<<"	get all msg"<<endl;			//test
 	byte* ReqMsg = new byte[size()];
 	getBytes(ReqMsg);
 	ReqMsg[size()] = '\0';
-	cout<<" all msg :"<<ReqMsg;
-	cout<<"Response Create() success"<<endl;
+	//cout<<" all msg :"<<ReqMsg;
+	//cout<<"Response Create() success"<<endl;
 	
 	return ReqMsg;
 }
@@ -117,10 +118,13 @@ int HTTPResponse::parse()
 	version = getFirstPart(strPlitSpace,strPlitSpace.size(),getrpos());
 	//解析status-Code
 	string strSC = getFirstPart(strPlitSpace,strPlitSpace.size(),getrpos());
-	if( (statusCode=statusCodeStr2Int(strSC))==-1 ){
-		perror("Status-Code String Not Found");
-		return 0;
-	}
+	//cout<<"status-Code"<<strSC<<endl;
+	statusCode=atoi( strSC.c_str());
+	//cout<<statusCode<<endl;
+	//if( (statusCode=atoi( strSC.c_str() ) )==-1 ){
+	//	perror("Status-Code String Not Found");
+	//	return 0;
+	//}
 	//解析reason-Phrase
 	string strPlitCRLF("\r\n");
 	reason = getFirstPart(strPlitCRLF,strPlitCRLF.size(),getrpos());
@@ -139,7 +143,7 @@ void HTTPResponse::insertHeaders( const string &key, const string &mapped )
 	
 void HTTPResponse::displayMessage()
 {
-	cout<<"dispaly response"<<endl<<getVersion()<<" "<<statusCodeInt2Str(getStatusCode())<<" "<<getReason()<<endl;
+	cout<<endl<<getVersion()<<" "<<statusCodeInt2Str(getStatusCode())<<" "<<getReason()<<endl;
 	disHeadData();
 }
 	

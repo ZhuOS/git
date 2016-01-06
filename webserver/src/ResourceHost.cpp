@@ -39,7 +39,7 @@ Resource* ResourceHost::getResource(std::string uri)
 //string buff;		//不知为啥，在运行中，buff内存会变来变去，不好玩######指针 坑坑啊 
 Resource* ResourceHost::readFile(const string &path)
 {	
-	cout<<"ResourceHost readFile begin path: "<<path<<endl;//test
+	//cout<<"ResourceHost readFile begin path: "<<path<<endl;//test
 	/*第一种
 	ifstream infile;
 	infile.open(path.c_str(), std::ios::binary);
@@ -65,13 +65,13 @@ Resource* ResourceHost::readFile(const string &path)
 	} 
 	infile.seekg(0, std::ios::end);    // go to the end  
 	length = infile.tellg();           // report location (this is the length)  
-	cout<<length<<endl;
+	//cout<<length<<endl;
 	infile.seekg(0, std::ios::beg);    // go back to the beginning  
 	PointCharData = new char[length];    // allocate memory for a buffer of appropriate dimension  
 	infile.read(PointCharData, length);       // read the whole file into the buffer  
 	infile.close();                    // close file handle  	
     PointCharData[length] = '\0';
-    cout<<"     ---PointCharData: "<<PointCharData<<endl;
+    //cout<<"     ---PointCharData: "<<PointCharData<<endl;
 	
 	Resource *res = new Resource(path, false);
 	res->setData( (byte*)PointCharData, length );			//有错误
@@ -85,17 +85,17 @@ Resource* ResourceHost::readFile(const string &path)
 	if( bpos != string::npos){
 		//cout<<"	MimeType Found"<<endl;				//test
 		ext = path.substr(bpos+1);
-		cout<<"	extration:"<<ext<<endl;					//test
+		//cout<<"	extration:"<<ext<<endl;					//test
 		mity = getMimeType(ext);
 	}else{
 		perror("	MimeType Not Found");
 		return NULL;
 	}
 	res->setMimeType(mity);
-	cout<<"resourceHost readFile success ,resource size:"<<res->getSize()<<endl;//test
+	//cout<<"resourceHost readFile success ,resource size:"<<res->getSize()<<endl;//test
 	byte* dataBytes = res->getData();				//test
 	dataBytes[res->getSize()] = '\0';				//test
-	cout<<"	### res get data:"<<dataBytes<<endl;	//test	
+	//cout<<"	### res get data:"<<dataBytes<<endl;	//test	
 	//delete dataBytes;
 	return res;
 }

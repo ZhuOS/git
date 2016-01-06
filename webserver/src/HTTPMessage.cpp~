@@ -33,7 +33,7 @@ void HTTPMessage::putHeaders()//#########出错了
 
 void HTTPMessage::putData()
 {
-	cout<<"	Message putData datalen: "<<datalen<<endl;
+	//cout<<"	Message putData datalen: "<<datalen<<endl;
 	putBytes(data, datalen);
 }
 

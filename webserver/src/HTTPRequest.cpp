@@ -76,7 +76,7 @@ byte* HTTPRequest::create()
 //请求数据包 解析函数
 int HTTPRequest::parse()
 {
-	cout<<"Request parse"<<endl;
+	//cout<<"Request parse"<<endl;
 	
 	string strPlitSpace(" ");
 	string strMeth = getFirstPart(strPlitSpace, strPlitSpace.size(), getrpos());//########出错了
@@ -102,12 +102,13 @@ int HTTPRequest::parse()
 	//解析正文消息 data
 	//cout<<"##parse data:"<<getrpos()<<"="<<size()<<endl;//test
 	if(getrpos()<size()){
-		cout<<"	have data\n";							//test
+		//cout<<"	have data\n";							//test
 		getBytes(data,size()-getrpos());
 		setData(data,size()-getrpos());
-	}else
-		cout<<"	no data\n";									//test
-	cout<<"Request parse success"<<endl;					//test
+	}else{
+		;//cout<<"	no data\n";				//test
+	}	
+	//cout<<"Request parse success"<<endl;					//test
 	return 1;
 }
 // 显示请求信息
@@ -115,7 +116,7 @@ void HTTPRequest::displayMessage()
 {
 	cout<<methodInt2Str(method)<<" "<<requestUri<<" "<<version<<endl;
 	disHeadData();							//########出错了,solved
-	cout<<"request display success"<<endl;//test
+	//cout<<"request display success"<<endl;//test
 }
 
 

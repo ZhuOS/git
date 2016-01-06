@@ -22,7 +22,7 @@ void handleTermSig(int snum) {
 int main (int argc, const char * argv[])
 {
     // 忽视 SIGPIPE "Broken pipe" 信号
-    std::cout << "main begin" << std::endl;
+    //std::cout << "main begin" << std::endl;
     signal(SIGPIPE, handleSigPipe);
 
 	// 注册中断处理
@@ -36,7 +36,7 @@ int main (int argc, const char * argv[])
 
 	// 进入主循环
 	svr->process();
-	cout<<"to stop"<<endl;
+	//cout<<"to stop"<<endl;
 	// 停止服务器
 	svr->stop();
 	delete svr;

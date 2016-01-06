@@ -25,6 +25,7 @@ public:
 	void setReason(const string &rea){ reason = rea; }
 	void insertHeaders( const string &key, const string &mapped );
 	
+	
 	//fetch
 	int getStatusCode(){ return statusCode; }
 	string getReason(){ return reason; }

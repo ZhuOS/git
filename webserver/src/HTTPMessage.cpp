@@ -3,7 +3,7 @@
 
 HTTPMessage::HTTPMessage()
 {
-	cout<<"Message()"<<endl;
+	//cout<<"Message()"<<endl;
 	version = HTTP_VERSION;
 	headers = new map<string,string>();
 	data = NULL;
@@ -59,7 +59,7 @@ int HTTPMessage::parseHeaders()
 void HTTPMessage::disHeadData()
 {
 	//显示报头
-	cout<<"<<disHeadData: "<<endl;//test
+	//cout<<"<<disHeadData: "<<endl;//test
 	for(map<string,string>::iterator it = headers->begin(); it != headers->end(); it++)
 		cout<<it->first<<":"<<it->second<<endl;
 	cout<<endl;
@@ -73,9 +73,9 @@ void HTTPMessage::disHeadData()
 		sprintf(cc, "%s", data);
 		str = cc;
 		str.resize(datalen);
-		cout<<"str:"<<str<<endl;
+		cout<<str<<endl;
 	}
-	cout<<"disHeadData success>>"<<endl;//test
+	//cout<<"disHeadData success>>"<<endl;//test
 }
 
 
