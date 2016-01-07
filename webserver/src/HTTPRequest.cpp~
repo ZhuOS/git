@@ -33,11 +33,12 @@ void HTTPRequest::init()
 	method = OPTIONS;
 }
 //method 整型转字符串
+
+
 string HTTPRequest::methodInt2Str( int mid )
 {
 	if( mid<0 || METHOD_NUM<mid )
 		return "";
-	
 	
 	return MethodString[mid];								//感觉，有问题
 }
@@ -75,38 +76,39 @@ byte* HTTPRequest::create()
 //请求数据包 解析函数
 int HTTPRequest::parse()
 {
-	cout<<"Request parse"<<endl;
+	//cout<<"Request parse"<<endl;
 	
 	string strPlitSpace(" ");
 	string strMeth = getFirstPart(strPlitSpace, strPlitSpace.size(), getrpos());//########出错了
 	
 	//解析 method
 	if( (method = methodStr2Int(strMeth))== -1 ){
-		perror("get method error");
+		perror("	get method error");
 		return 0;
 	}
-	cout<<"method: "<<method<<endl;					//test
+	//cout<<"method: "<<method<<endl;					//test
 	//解析request-URI
 	requestUri = getFirstPart(strPlitSpace, strPlitSpace.size(), getrpos());
-	cout<<"Request-Uri: "<<requestUri<<endl;			//test
+	//cout<<"Request-Uri: "<<requestUri<<endl;			//test
 	//解析HTTP-version
 	string strPlitCRLF("\r\n");
 	version = getFirstPart(strPlitCRLF,strPlitCRLF.size(),getrpos());
-	cout<<"Version: "<<version<<endl;					//test
+	//cout<<"Version: "<<version<<endl;					//test
 	//解析Headers
 	if( !parseHeaders() ){
-		perror("parseHeaders error");
+		perror("	parseHeaders error");
 		return 0;
 	}
 	//解析正文消息 data
-	cout<<"##parse data:"<<getrpos()<<"="<<size()<<endl;//test
+	//cout<<"##parse data:"<<getrpos()<<"="<<size()<<endl;//test
 	if(getrpos()<size()){
 		cout<<"	have data\n";							//test
 		getBytes(data,size()-getrpos());
 		setData(data,size()-getrpos());
-	}else
-		cout<<"	no data\n";									//test
-	cout<<"Request parse success"<<endl;					//test
+	}else{
+		;//cout<<"	no data\n";				//test
+	}	
+	//cout<<"Request parse success"<<endl;					//test
 	return 1;
 }
 // 显示请求信息
@@ -114,7 +116,7 @@ void HTTPRequest::displayMessage()
 {
 	cout<<methodInt2Str(method)<<" "<<requestUri<<" "<<version<<endl;
 	disHeadData();							//########出错了,solved
-	cout<<"request display success"<<endl;//test
+	//cout<<"request display success"<<endl;//test
 }
 
 

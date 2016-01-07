@@ -83,16 +83,19 @@ void HTTPServer::stop()
 void HTTPServer::process()
 {
 	// Step 6：kqueue等待就绪事件
-	cout<<"start process"<<endl;
+	//cout<<"start process"<<endl;
 	int ret = 0;
 	while(En){
+		cout<<"waiting..."<<endl;
 		ret = kevent(kqfd, NULL, 0, evList, QUEUE_SIZE, NULL); //等待就绪事件
+		cout<<"kevent happened: "<<"ret= "<<ret<<endl;
 		if(ret < 0){
 			perror("kqueue wait error");
 			continue;
 		}
 		HandleEvent(kqfd, evList, ret); 		//事件处理
 	}
+	
 }
 
 /*******************kqueue***********************/
@@ -153,13 +156,13 @@ void HTTPServer::Accept(int kq, int connSize)
 
 		Client *clt = new Client(client_fd,clientAddr);
 		clientMap.insert( make_pair(client_fd,clt) );
-		cout<<"add client to clientMap"<<endl;
+		//cout<<"add client to clientMap"<<endl;
     }
 }
 //接收数据
 void HTTPServer::Receive(int sockfd, int availBytes)
 {
-	cout<<"fd:"<<sockfd<<" Receive data:"<<availBytes<<endl;//for test
+	//cout<<"clientfd:"<<sockfd<<" Receive data:"<<availBytes<<endl;//for test
     if(availBytes == 0){		//连接中断
 		close(sockfd);
 		clientMap.erase(sockfd);
@@ -181,10 +184,10 @@ Client* HTTPServer::getClient(int clfd)
     it = clientMap.find(clfd);
 	
 	if(it == clientMap.end()){
-		cout<<"getClient no"<<endl;
+		cout<<"Client not exist"<<endl;
 		return NULL;
 	}
-		cout<<"getClient"<<endl;
+	//cout<<"getClient"<<endl;
     return it->second;
 }
 //读取消息到Client中
@@ -197,10 +200,10 @@ void HTTPServer::readClient(Client* pclt, int msgLen)
 		disconnet(pclt);
 		return;
 	}else if(n == 0){	//连接已经断开
-		cout<<"client:"<<pclt->getIP()<<" exit."<<endl;
+		cout<<"Client:"<<pclt->getIP()<<" exit."<<endl;
 		disconnet(pclt);
 	}else{				//处理接收的数据包
-		cout<<"readClient"<<endl;
+		//cout<<"readClient"<<endl;
 		HandleMsg(pclt,buffRecv, n);
 		//###############################################到这里了
 
@@ -230,30 +233,30 @@ bool HTTPServer::disconnet(Client* clt)
 //message handling function
 bool HTTPServer::HandleMsg(Client *clt, char* message, int len)
 {
-	cout<<"HandleMsg:"<<endl;
+	//cout<<"HandleMsg:"<<endl;
 	//message[len]='\0';
 	//cout<<message<<":"<<len<<endl;
 	
 	HTTPRequest* req = new HTTPRequest( (byte*)message, len );//########出错了，解决
-	cout<<"mark"<<endl;
+	//cout<<"mark"<<endl;
 	if( !req->parse() ){				//########出错了,解决
 		perror("request parse error");
 		return false;
 	}
 	else{
 		//显示请求消息
-		cout<<"##receive message: \n";
+		//cout<<"##receive message: \n";
 		//cout<<req->getMethod()<<req->getReqUri()<<endl;//test
-		
+		cout<<"Request message:"<<endl;
 		req->displayMessage();			//########出错了,solved
 
 		int method = req->getMethod();
-		cout<<"Method method= "<<method<<endl;
+		//cout<<"Method method= "<<method<<endl;
 		switch(method){
 			case HEAD:					//方法HEAD
-				cout<<"###get HEAD message"<<endl;//test
+				//cout<<"###get HEAD message"<<endl;//test
 			case GET:
-				cout<<"###GET message"<<endl; //test
+				//cout<<"###GET message"<<endl; //test
 				handleGet(clt,req);		//方法GET
 				break;
 			case OPTIONS:				//方法OPTIONS
@@ -268,6 +271,7 @@ bool HTTPServer::HandleMsg(Client *clt, char* message, int len)
 			default:
 				break;
 		}
+		//delete req;
 		return true;
 	}
 }
@@ -294,35 +298,81 @@ void HTTPServer::handleGet(Client* clt, HTTPRequest* req)
 		resHost = itVhost->second;
 	// get the Request-Uri
 	string uri = req->getReqUri();
-	// get resource
-	Resource *res = resHost->getResource(uri);
+	
 	// conduct HTTPResponse
-	HTTPResponse* resp = new HTTPResponse();
+	HTTPResponse* resp=new HTTPResponse();	//#####################################
 	resp->setVersion(HTTP_VERSION);
 	resp->setStatusCode(Status(OK));
 	resp->setReason("OK");
-	cout<<">>getMimeType:"<<res->getMimeType()<<endl;		//test
-	resp->insertHeaders("Content-Type",res->getMimeType());	//####出错了,solved
-	cout<<"<<getMimeType"<<endl;							//test
-	
-	cout<<"server"<<endl;//test
 	resp->insertHeaders("Server","ZhuOS/1.1");
+	cout<<"get resp->getStatusCode()"<<resp->getStatusCode()<<endl;
+	// get resource
+	Resource *res = resHost->getResource(uri);
 
+	//PointCharData[res->getSize()] = '\0';
+
+	//cout<<"		***PointCharData:"<<PointCharData<<endl;
+	//byte *dataBytes1 = res->getData();				//test
+	//dataBytes1[res->getSize()] = '\0';				//test
+	//cout<<"	1@response res get data:"<<dataBytes1<<endl		//test1
+	//    <<"		"<<res->getMimeType()<<endl
+	//    <<"		"<<res->getLocation()<<endl;			//test
+    //cout<<"     resHost getFileCharData: "<<resHost->getFileData()<<endl;
+    
+	resp->insertHeaders("Content-Type",res->getMimeType());	//####出错了,solved
 	std::stringstream sz;
-	sz << res->getSize();							//##出错了,solved
-	cout<<"resource size: "<<sz.str()<<endl<<"content-length"<<endl;//test
+	sz << res->getSize();					//##出错了,solved
+	//cout<<"resource size: "<<sz.str()<<endl<<"content-length"<<endl;//test
 	resp->insertHeaders("Content-Length",sz.str());
-	
-	cout<<"data"<<endl;//test
-	resp->setData(res->getData(),res->getSize());
-	cout<<"create"<<endl;//test	
-	//resp->displayMessage();//test
-	resp->create();								//##出错了,solved
-	
+
+	//cout<<"	response set data"<<endl;				//test
+
+
+	//byte* dataBytes2 = res->getData();				//test从这里
+	//dataBytes2[res->getSize()] = '\0';				//test2
+	//cout<<"	2@response res get data "<<res->getSize()<<":"<<dataBytes2<<endl//test
+	 //   <<"		"<<res->getMimeType()<<endl
+	//    <<"		"<<res->getLocation()<<endl;
+    //cout<<"     resHost getFileCharData: "<<resHost->getFileData()<<endl;
+	//byte* dataBytes5 = res->getData();				//test从这里
+	//dataBytes5[res->getSize()] = '\0';				//test5
+	//cout<<"	5@response res get data "<<res->getSize()<<":"<<dataBytes5<<endl//test
+	//    <<"		"<<res->getMimeType()<<endl
+	//    <<"		"<<res->getLocation()<<endl;
+
+
+	resp->setData(res->getData(),res->getSize());			//有错
+
+
+	//byte* dataBytes3 = res->getData();				//test3
+	//dataBytes3[res->getSize()] = '\0';				//test
+	//cout<<"	3@response res get data "<<res->getSize()<<":"<<dataBytes3<<endl//test
+	//    <<"		"<<res->getMimeType()<<endl
+	 //   <<"		"<<res->getLocation()<<endl;
+    //cout<<"     resHost getFileCharData: "<<resHost->getFileData()<<endl;
+
+	//byte* dataBytes4 = resp->getData();				//test4
+	//dataBytes4[resp->getDataLen()] = '\0';				//test
+	//cout<<"	4@response resp get data:"<<resp->getData()<<endl		//test
+	//    <<"		"<<resp->getStatusCode()<<endl
+	 //   <<"		"<<resp->getReason()<<endl;
+   // cout<<"     resHost getFileCharData: "<<resHost->getFileData()<<endl;
+
+	//cout<<"create"<<endl;						//test	
+	//resp->displayMessage();					//test
+	resp->create();							//##出错了,检查
+	cout<<"get resp->getStatusCode()"<<resp->getStatusCode()<<endl;	
+	resp->parse();
+	cout<<"resp->parse(); resp->getStatusCode()"<<resp->getStatusCode()<<endl;
+    //cout<<"     resHost getFileCharData: "<<resHost->getFileData()<<endl;
+	//cout<<"resp->getData(): "<<resp->getData()<<endl;
 	// display Response-Message 
+	cout<<"Response GET message:"<<endl; 
 	resp->displayMessage();
-	// send Response-Message 
+	// send Response-Message
+
 	sendResponse(clt, resp);
+	//delete resp;
 	cout<<"handleGet() success"<<endl;//test
 }
 //OPTIONS 请求查询服务器的性能，或者查询与资源相关的选项和需求
@@ -339,6 +389,7 @@ void HTTPServer::handleOptions(Client* clt, HTTPRequest* req)
 	resp->insertHeaders( "Server","ZhuOS/1.1" );	
 	resp->create();
 	// display Response-Message 
+	cout<<"Response OPTIONS message"<<endl; 
 	resp->displayMessage();
 	// send Response-Message 
 	sendResponse(clt,resp);
@@ -348,6 +399,7 @@ void HTTPServer::handleOptions(Client* clt, HTTPRequest* req)
 void HTTPServer::sendResponse(Client* clt, HTTPResponse* resp)
 {
 	// get the sending data
+	//cout<<"sendResponse message"<<endl;
 	char* buffSend = new char[resp->size()];
 	resp->getBytes( (byte*)buffSend );
 	//send message
@@ -355,5 +407,8 @@ void HTTPServer::sendResponse(Client* clt, HTTPResponse* resp)
 		perror("send Responsing-Message error!");
 		return;
 	}
+	//cout<<"sendResponse success"<<endl;
+	//delete buffSend;
+	
 }
 

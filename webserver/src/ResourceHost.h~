@@ -17,12 +17,14 @@
 //ifstream
 #include <fstream>
 
-#include "Resource.h"
+#include "Resource.h" 
 
 #define  BASE_PATH  "./htdoc"
 
+
 class ResourceHost {
 private:
+	char *PointCharData;
     // 基础目录，其他的访问路径都是该目录下的相对路径
     std::string baseDiskPath;
 
@@ -33,15 +35,15 @@ private:
     };
 	//std::unordered_map<std::string, std::string> mimeMap;
 	string getMimeType(const string &ext);
-	
+	//读文件资源
+	Resource* readFile(const string &path);
 public:
-	
+	char *getFileData(){ return PointCharData; }
 	ResourceHost(const string &basePath = BASE_PATH);
 	
     // 根据URI获取Resource资源对象
     Resource* getResource(std::string uri);
-	//读文件资源
-	Resource* readFile(const string &path);
+
 };
 
 

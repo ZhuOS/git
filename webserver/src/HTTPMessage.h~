@@ -64,16 +64,24 @@ protected:
     // 响应消息中表示资源，请求消息中表示额外的参数
     byte* data;
 
+	int parseHeaders();
+	
+	void disHeadData();
 public:
 	HTTPMessage();
 	HTTPMessage(const string &ver, map<std::string, std::string> *phed, const string &dat);
+	~HTTPMessage()
+	{
+		cout<<"		@@#@#~HTTPMessage()"<<endl;
+		headers->clear();
+	}
 	//设置
 	void setVersion(const string &ver){ version = ver; }
 	void setHeaders( map<string,string> *phed){ headers = phed; }
-	void setData( const string &dat, unsigned int len )
-	{	data = (byte*)dat.c_str(); 
-		datalen = len; 
-	}
+	//void setData( string dat, unsigned int len )
+	//{	data = (byte*)dat.c_str(); 
+	//	datalen = len; 
+	//}
 	void setData( byte* dat,unsigned int len )
 	{	data = dat; 
 		datalen = len; 
@@ -95,9 +103,7 @@ public:
 	virtual byte* create()=0;
     // 解析消息
     virtual int parse()=0;
-	int parseHeaders();
-	
-	void disHeadData();
+
 };
 
 #endif

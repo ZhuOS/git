@@ -23,6 +23,7 @@ public:
     // 返回存储空间大小
     unsigned int size(); 
     // 读取队列头部的数据同时移动rpos
+
     byte get();
 	byte getBytes(unsigned int index);
 	//
@@ -48,7 +49,8 @@ public:
 	//获取第一个plit分隔的下标
 	int my_find_first_of(const string &strBytes,  int len,  int bpos);
 	
-	
+	//
+	vector<byte>::size_type getWpos(){ return wpos;} 
 };
     
 #endif

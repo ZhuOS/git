@@ -12,7 +12,7 @@ typedef unsigned char byte;
 class Resource {
 private:
     // 文件资源
-    byte* data;
+    byte* msg;
     // 资源大小
     unsigned int size;
     // 资源类型
@@ -25,10 +25,14 @@ private:
 public:
 	Resource();
 	Resource( const string &dir, bool isDir);
+	~Resource()
+	{ 	cout<<"	###~Resouce()"<<endl;
+		delete msg;
+	}
 	//seting
 	void setData(byte* dat, unsigned int len)
 	{
-		data = dat;
+		msg = dat;
 		size = len; 
 	}	
 	void setMimeType(const string &mity)
@@ -41,8 +45,9 @@ public:
 	}
 	//fetch
 	string getMimeType(){ return mimeType; }
-	byte*  getData(){ return data; }
-	unsigned int	   getSize(){ return size; }
+	byte*  getData(){ return msg; }
+	unsigned int getSize(){ return size; }
+	string getLocation(){ return location; }
 	
 	
 	

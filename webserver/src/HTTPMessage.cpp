@@ -3,6 +3,7 @@
 
 HTTPMessage::HTTPMessage()
 {
+	//cout<<"Message()"<<endl;
 	version = HTTP_VERSION;
 	headers = new map<string,string>();
 	data = NULL;
@@ -18,20 +19,21 @@ HTTPMessage::HTTPMessage(const string &ver, map<std::string, std::string> *phed,
 // 创建消息
 void HTTPMessage::putHeaders()//#########出错了
 {	
-	cout<<"putHeaders: size "<<headers->size()<<endl;			//test
+	//cout<<"putHeaders: size "<<headers->size()<<endl;			//test
 	map<string,string>::const_iterator it;
 	for(it = headers->begin(); it != headers->end(); it++){
 		string temp = it->first+":"+it->second+"\r\n";
-		cout<<"	temp "<<temp<<endl;					//test		
+		//cout<<"	temp "<<temp<<endl;					//test		
 		putBytes((byte*)temp.c_str(),temp.size());
 	}
-	cout<<"putcrlf"<<endl;
+	//cout<<"putcrlf"<<endl;
 	putcrlf();
-	cout<<"putHeaders: exit"<<endl;//test
+	//cout<<"putHeaders: exit"<<endl;//test
 }
 
 void HTTPMessage::putData()
 {
+	//cout<<"	Message putData datalen: "<<datalen<<endl;
 	putBytes(data, datalen);
 }
 
@@ -49,9 +51,9 @@ int HTTPMessage::parseHeaders()
 		string strSecond = getFirstPart("\r\n",2,getrpos());
 		headers->insert( make_pair(strFirst,strSecond) );
 	}
-	cout<<"	parseHeaders test: epos="<<epos<<"getrpos()="<<getrpos()<<endl;///test
+	//cout<<"	parseHeaders test: epos="<<epos<<"getrpos()="<<getrpos()<<endl;///test
 	setrpos(epos+4);
-	cout<<"	getpos()="<<getrpos()<<endl;//test
+	//cout<<"	getpos()="<<getrpos()<<endl;//test
 	return 1;
 }
 void HTTPMessage::disHeadData()
@@ -62,7 +64,9 @@ void HTTPMessage::disHeadData()
 		cout<<it->first<<":"<<it->second<<endl;
 	cout<<endl;
 	//显示正文
-	//cout<<"data:"<<datalen<<endl;				//########data显示出错
+
+	//data[datalen]='\0';	
+	//cout<<"data:"<<datalen<<"data="<<data<<endl;			//########data显示出错
 	if( datalen>0 ){
 		char* cc = new char[datalen];
 		string str;
@@ -71,7 +75,7 @@ void HTTPMessage::disHeadData()
 		str.resize(datalen);
 		cout<<str<<endl;
 	}
-	cout<<"disHeadData success>>"<<endl;//test
+	//cout<<"disHeadData success>>"<<endl;//test
 }
 
 
