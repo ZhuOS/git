@@ -1,0 +1,39 @@
+//SendQueueItem.h
+#ifndef SENDQUEUEITEM_H
+#define SENDQUEUEITEM_H
+
+#include <cstdlib>
+
+
+typedef unsigned char byte;
+
+class SendQueueItem{
+private:
+	// 发送数据
+    byte* data;
+	// 数据的总长度
+	unsigned int sendSize;
+	// 数据偏移
+	unsigned int sendOffset;
+	// 发送完数据后，是否断开客户端
+	bool disConnect;
+
+public: 
+	SendQueueItem(byte* dat, unsigned int size, bool dc):data(dat),sendSize(size),disConnect(dc){
+		sendOffset = 0;
+	}
+	
+	// 设置偏移
+	void setOffset(unsigned int offset){ sendOffset = offset; }
+	// 获取数据
+    byte* getData(){ return data; }
+	// 获取数据总长度
+	unsigned int getSize(){ return sendSize; }
+	// 获取偏移
+	unsigned int getOffset(){ return sendOfftset; }
+	// 获取disConnect
+	bool getDisConnect(){ return disConnect; }
+};
+
+
+#endif

@@ -61,7 +61,7 @@ private://私有成员方法
 	bool updateKqueue(	int ident, short filter, u_short flags,
 					u_int fflags, int data, void *udata);
 	//事件处理函数
-	void HandleEvent(int kq, struct kevent *events, int nevents); 
+	void HandleEvent(int kq, int nevents); 
 	//新连接函数
 	void Accept(int kq, int connSize); 
 	//接收数据
@@ -70,6 +70,7 @@ private://私有成员方法
 	Client* getClient(int clfd); 
 	//读取消息到Client中
 	void readClient( Client* pclt, int msgLen );
+    bool writeClient(Client* pclt, int msgLen);
 	//Client断开连接
 	bool disconnet( Client* clt );
 	//message handling function
@@ -78,7 +79,7 @@ private://私有成员方法
 	void handleOptions( Client* clt, HTTPRequest* req );
 	//void handlePost(HTTPRequest* resq);
 	// 发送响应消息给客户端
-	void sendResponse(Client* clt, HTTPResponse* resp);
+	void sendResponse(Client* clt, HTTPResponse* resp, bool dc);
 public:
 	bool En;
 public:
