@@ -246,7 +246,7 @@ void HTTPServer::readClient(Client* pclt, int msgLen)
 	delete [] buffRecv;
 }
 bool HTTPServer::writeClient(Client* pclt, int msgLen) {
-	cout<<"****************"<<msgLen<<endl;
+	//cout<<"****************"<<msgLen<<endl;
 	int actual_sent = 0; // 实际发送给客户端的数据
 	int attempt_sent = 0; // 尝试发送的数据
 	int remaining = 0; // 等待发送的数据
@@ -272,8 +272,8 @@ bool HTTPServer::writeClient(Client* pclt, int msgLen) {
 		return false;
 	}
 
-	cout<<"1Size:"<<item->getSize()<<endl;
-	cout<<"1Offset:"<<item->getOffset()<<endl;
+	//cout<<"1Size:"<<item->getSize()<<endl;
+	//cout<<"1Offset:"<<item->getOffset()<<endl;
 
 	
 	pData = item->getData();
@@ -290,15 +290,15 @@ bool HTTPServer::writeClient(Client* pclt, int msgLen) {
 
 	// 发送数据并根据实际发送的数据调整偏移
 	actual_sent = send(pclt->getsocketDesc(), pData+(item->getOffset()), attempt_sent, 0);
-	cout<<"actual_sent:"<<actual_sent<<endl;
+	//cout<<"actual_sent:"<<actual_sent<<endl;
 	if(actual_sent >= 0)
 		item->setOffset(item->getOffset() + actual_sent);
 	else{
 		perror("# Write Client send message error!");
 		return false;
 	}
-	cout<<"2Size:"<<item->getSize()<<endl;
-	cout<<"2Offset:"<<item->getOffset()<<endl;
+	//cout<<"2Size:"<<item->getSize()<<endl;
+	//cout<<"2Offset:"<<item->getOffset()<<endl;
 	// 如果偏移量大于了实际的数据大小，
     // 表示已经发送完毕不再需要这个SendQueueItem了则出队操作
 	if(item->getOffset() >= item->getSize())
@@ -309,7 +309,7 @@ bool HTTPServer::writeClient(Client* pclt, int msgLen) {
 		cout<<" disconnet client"<<endl;
 		return false;
 	}
-	cout<<"======================="<<endl;
+	//cout<<"======================="<<endl;
 	return true;
 }
 //Client断开连接
@@ -439,7 +439,9 @@ void HTTPServer::handleGet(Client* clt, HTTPRequest* req)
 
 	std::stringstream sz;
 	sz << res->getSize();					//##出错了,solved
-	//cout<<"resource size: "<<sz.str()<<endl<<"content-length"<<endl;//test
+	
+	cout<<"#resource size: "<<sz.str()<<endl;		//test
+
 	resp->insertHeaders("Content-Length",sz.str());
 	resp->insertHeaders("Content-Type",res->getMimeType());	//####出错了,solved
 	
@@ -449,7 +451,7 @@ void HTTPServer::handleGet(Client* clt, HTTPRequest* req)
 
 	//cout<<"create"<<endl;						//test	
 	//resp->displayMessage();					//test
-	resp->create();							//##出错了,检查
+	//resp->create();							//##出错了,检查
 	
 	// 判断通信完后，客户端是否断开
 	bool dc = false;
@@ -458,7 +460,10 @@ void HTTPServer::handleGet(Client* clt, HTTPRequest* req)
 		if(it->second.compare("close") == 0)
 			dc = true;
 	}
+	
 	sendResponse(clt, resp, dc);
+	//delete resp;
+	//delete res;
 	//delete resp;
 	//cout<<"handleGet() success"<<endl;//test
 }
@@ -488,15 +493,48 @@ void HTTPServer::handleOptions(Client* clt, HTTPRequest* req)
 			dc = true;
 	}
 	sendResponse(clt, resp, dc);
+	//delete resp;
 }
 
 /*********************Send Message Handle****************************/
 void HTTPServer::sendResponse(Client* clt, HTTPResponse* resp, bool dc)
 {
-	byte* buffSend = new byte[resp->size()];
-	resp->getBytes( buffSend );
 
-	clt->addToSendQueue(new SendQueueItem(buffSend, resp->size(), dc)); 
+	// 服务器头部
+	resp->insertHeaders("Server","shiyanlouserver/1.0");
+
+	// 响应的时间信息
+	std::string tstr;
+	char tbuf[36];
+	time_t rawtime;
+	struct tm* ptm;
+	time(&rawtime);
+	ptm = gmtime(&rawtime);
+	// Ex: Fri, 31 Dec 1999 23:59:59 GMT
+	strftime(tbuf, 36, "%a, %d %b %Y %H:%M:%S GMT", ptm);
+	tstr = tbuf;
+	resp->insertHeaders("Date", tstr);
+
+	// 是否需要在头部中添加断开连接的信息
+	if(dc)
+		resp->insertHeaders("Connection", "close");
+	
+	// 创建响应数据
+	byte* pData = resp->create();
+
+	cout<<"#resp.size() "<<resp->size()<<endl;			//for test
+	pData[resp->size()] = '\0';
+	cout<<"#data: "<<pData<<endl; 
+
+	//byte* buffSend = new byte[resp->size()];
+	//resp->getBytes( buffSend );
+
+	// 将数据添加到客户端的发送队列
+	clt->addToSendQueue(new SendQueueItem(pData, resp->size(), dc)); 
+
+
+
+
 	/*	
 	// get the sending data
 	//cout<<"sendResponse message"<<endl;

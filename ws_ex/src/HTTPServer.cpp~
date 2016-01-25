@@ -145,8 +145,8 @@ void HTTPServer::stop() {
 void HTTPServer::updateEvent(int ident, short filter, u_short flags, u_int fflags, int data, void *udata) {
 	struct kevent kev;
 	EV_SET(&kev, ident, filter, flags, fflags, data, udata);
-	int ret = kevent(kqfd, &kev, 1, NULL, 0, NULL);
-    std::cout<<ret<<std::endl;
+	kevent(kqfd, &kev, 1, NULL, 0, NULL);
+
 }
 
 /**
@@ -333,7 +333,7 @@ void HTTPServer::readClient(Client *cl, int data_len) {
  * @param avail_bytes 发送队列中等待写入的数据大小
  */
 bool HTTPServer::writeClient(Client* cl, int avail_bytes) {
-	cout<<"***********"<<avail_bytes<<endl;
+	//cout<<"***********"<<avail_bytes<<endl;
     if (cl == NULL)
         return false;
 
@@ -357,8 +357,8 @@ bool HTTPServer::writeClient(Client* cl, int avail_bytes) {
 	if(item == NULL)
 		return false;
 
-	cout<<"1Size:"<<item->getSize()<<endl;
-	cout<<"1Offset:"<<item->getOffset()<<endl;
+	//cout<<"1Size:"<<item->getSize()<<endl;
+	//cout<<"1Offset:"<<item->getOffset()<<endl;
 
 	pData = item->getData();
 	remaining = item->getSize() - item->getOffset();
@@ -375,15 +375,15 @@ bool HTTPServer::writeClient(Client* cl, int avail_bytes) {
 	// 发送数据并根据实际发送的数据调整偏移
 	actual_sent = send(cl->getSocket(), pData+(item->getOffset()), attempt_sent, 0);
 	
-	cout<<"actual_sent:"<<actual_sent<<endl;
+	//cout<<"actual_sent:"<<actual_sent<<endl;
 
 	if(actual_sent >= 0)
 		item->setOffset(item->getOffset() + actual_sent);
 	else
 		disconnect = true;
 
-	cout<<"2Size:"<<item->getSize()<<endl;
-	cout<<"2Offset:"<<item->getOffset()<<endl;
+	//cout<<"2Size:"<<item->getSize()<<endl;
+	//cout<<"2Offset:"<<item->getOffset()<<endl;
 
 	// 如果偏移量大于了实际的数据大小，
     // 表示已经发送完毕不再需要这个SendQueueItem了则出队操作
@@ -394,7 +394,7 @@ bool HTTPServer::writeClient(Client* cl, int avail_bytes) {
 		disconnectClient(cl);
 		return false;
 	}
-	cout<<"========================="<<endl;
+	//cout<<"========================="<<endl;
 	return true;
 }
 
@@ -476,6 +476,7 @@ void HTTPServer::handleGet(Client* cl, HTTPRequest* req, ResourceHost* resHost) 
 		resp->addHeader("Content-Type", r->getMimeType());
 		resp->addHeader("Content-Length", r->getSize());
 		
+        cout<<"#resource size: "<<r->getSize()<<endl;		//test
 		// 只为GET方法返回的数据
 		if(req->getMethod() == Method(GET))
 			resp->setData(r->getData(), r->getSize());
@@ -490,7 +491,8 @@ void HTTPServer::handleGet(Client* cl, HTTPRequest* req, ResourceHost* resHost) 
 		std::string connection_val = req->getHeaderValue("Connection");
 		if(connection_val.compare("close") == 0)
 			dc = true;
-			
+		
+	    cout<<"#resp.size() "<<resp->size()<<endl;			//for test        
 		sendResponse(cl, resp, dc);
 		delete resp;
 		delete r;
@@ -577,6 +579,8 @@ void HTTPServer::sendResponse(Client* cl, HTTPResponse* resp, bool disconnect) {
 	
 	// 创建响应数据
 	byte* pData = resp->create();
+
+    cout<<"#resp.size() "<<resp->size()<<endl;			//for test    
 
 	// 将数据添加到客户端的发送队列
 	cl->addToSendQueue(new SendQueueItem(pData, resp->size(), disconnect));

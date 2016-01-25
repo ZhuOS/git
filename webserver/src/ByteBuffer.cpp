@@ -74,7 +74,7 @@ void ByteBuffer::put(byte b)
 void ByteBuffer::putcrlf()
 { 
 	string str = "\r\n"; 
-	putBytes( (byte*)&str,2);
+	putBytes( (byte*)str.c_str(),2);	//&str->str.c_str()
 }
 
 void ByteBuffer::putBytes(byte* b, unsigned int len)//有错，solved
